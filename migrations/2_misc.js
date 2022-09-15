@@ -6,6 +6,9 @@ const StaticMarket = artifacts.require('./StaticMarket.sol')
 const TestERC20 = artifacts.require('./TestERC20.sol')
 const TestERC721 = artifacts.require('./TestERC721.sol')
 const TestERC1271 = artifacts.require('./TestERC1271.sol')
+const TestKIP7 = artifacts.require('./TestKIP7.sol')
+const TestKIP17 = artifacts.require('./TestKIP17.sol')
+const TestKIP37 = artifacts.require('./TestKIP37.sol')
 const TestSmartContractWallet = artifacts.require('./TestSmartContractWallet.sol')
 const TestAuthenticatedProxy = artifacts.require('./TestAuthenticatedProxy.sol')
 
@@ -30,6 +33,9 @@ module.exports = async (deployer, network) => {
   await deployer.deploy(TestAuthenticatedProxy)
   await deployer.deploy(TestERC1271)
   await deployer.deploy(TestSmartContractWallet)
+  await deployer.deploy(TestKIP7)
+  await deployer.deploy(TestKIP17)
+  await deployer.deploy(TestKIP37)
 
   if (network !== 'development') {
     setConfig('deployed.' + network + '.TestERC20', TestERC20.address)
@@ -37,6 +43,9 @@ module.exports = async (deployer, network) => {
     setConfig('deployed.' + network + '.TestAuthenticatedProxy', TestAuthenticatedProxy.address)
     setConfig('deployed.' + network + '.TestERC1271', TestERC1271.address)
     setConfig('deployed.' + network + '.TestSmartContractWallet', TestSmartContractWallet.address)
+    setConfig('deployed.' + network + '.TestSmartContractWallet', TestKIP7.address)
+    setConfig('deployed.' + network + '.TestSmartContractWallet', TestKIP17.address)
+    setConfig('deployed.' + network + '.TestSmartContractWallet', TestKIP37.address)
   }
 }
 

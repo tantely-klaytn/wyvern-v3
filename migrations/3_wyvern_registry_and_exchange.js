@@ -9,7 +9,8 @@ const chainIds = {
   coverage: 50,
   rinkeby: 4,
   mumbai: 80001,
-  main: 1
+  main: 1,
+  baobab: 1001
 }
 
 const personalSignPrefixes = {
