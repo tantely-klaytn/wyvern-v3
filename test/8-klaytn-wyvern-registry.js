@@ -4,7 +4,7 @@ const WyvernRegistry = artifacts.require('WyvernRegistry')
 const AuthenticatedProxy = artifacts.require('AuthenticatedProxy')
 const OwnableDelegateProxy = artifacts.require('OwnableDelegateProxy')
 const TestAuthenticatedProxy = artifacts.require('TestAuthenticatedProxy')
-const TestKIP7 = artifacts.require('TestKIP7')
+const TestERC20 = artifacts.require('TestKIP7')
 
 const Web3 = require('web3')
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
@@ -73,11 +73,11 @@ contract('WyvernRegistry',accounts => {
     const amount = '1000'
     let registry = await WyvernRegistry.deployed()
     let proxy = await registry.proxies(accounts[3])
-    let kip7 = await TestKIP7.deployed()
+    let erc20 = await TestERC20.deployed()
     let contract = new web3.eth.Contract(AuthenticatedProxy.abi,proxy)
     return assertIsRejected(
-      contract.methods.receiveApproval(accounts[3],amount,kip7.address,'0x').send({from: accounts[3]}),
-      /KIP7: transfer amount exceeds balance/,
+      contract.methods.receiveApproval(accounts[3],amount,erc20.address,'0x').send({from: accounts[3]}),
+      /KIP7: insufficient allowance/,
       'Should not have succeeded'
       )
   })
@@ -86,10 +86,10 @@ contract('WyvernRegistry',accounts => {
     const amount = '1000'
     let registry = await WyvernRegistry.deployed()
     let proxy = await registry.proxies(accounts[3])
-    let kip7 = await TestKIP7.deployed()
-    await Promise.all([kip7.mint(accounts[3],amount),kip7.approve(proxy,amount,{from: accounts[3]})])
+    let erc20 = await TestERC20.deployed()
+    await Promise.all([erc20.mint(accounts[3],amount),erc20.approve(proxy,amount,{from: accounts[3]})])
     let contract = new web3.eth.Contract(AuthenticatedProxy.abi,proxy)
-    assert.isOk(contract.methods.receiveApproval(accounts[3],amount,kip7.address,'0x').send({from: accounts[3]}))
+    assert.isOk(contract.methods.receiveApproval(accounts[3],amount,erc20.address,'0x').send({from: accounts[3]}))
   })
 
   it('does not allow proxy upgrade to same implementation',async () => {
@@ -115,8 +115,9 @@ contract('WyvernRegistry',accounts => {
     let registry = await WyvernRegistry.deployed()
     let proxy = await registry.proxies(accounts[3])
     let contract = new web3.eth.Contract(OwnableDelegateProxy.abi,proxy)
-    return assertIsRejected(
-      contract.methods.upgradeTo(registry.address).send({from: accounts[1]}),
+
+	return assertIsRejected(
+    contract.methods.upgradeTo(registry.address).send({from: accounts[1]}),
       /Returned error: VM Exception while processing transaction: revert/,
       'Allowed proxy update from another account'
       )
